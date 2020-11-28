@@ -1,5 +1,32 @@
-import pandas as pd # Importa el paquete pandas como pd
-# Lectura del archivo como un csv
-data = pd.read_csv("0_train_balanced_15000.csv",sep=";")
-# Imprime la "cabeza" del archivo
-data.head()
+import Preprocessing as p
+import Decision_Tree as d
+
+# Preprocess data
+train, col_names = p.preprocess_data(
+    "0_train_balanced_15000.csv", sep=";", keep_default_na=False)
+
+test, _ = p.preprocess_data(
+    "0_test_balanced_5000.csv", sep=";", keep_default_na=False)
+
+# Convert data to list
+ltrain = p.convert_to_list(train.iloc[0:150, :])
+ltest = p.convert_to_list(test.iloc[0:50, :])
+
+print(d.conteo_clase(ltrain))
+T = d.build_tree(ltrain, max_depth=2)
+print("-----------------------------Tree-----------------------------")
+d.print_tree(T)
+print("--------------------------------------------------------------")
+
+# Print actual values vs predictions
+for row in ltest:
+    print("Actual: %s. Predicted: %s" %
+          (row[-1], d.print_leaf(d.classify(row, T))))
+
+
+# Print to text file "test.txt"
+#sys.stdout = open("test.txt", "w")
+
+#---------------- code
+
+# #sys.stdout.close()
