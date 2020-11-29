@@ -1,96 +1,173 @@
 import Preprocessing as p
 
-# Definición de la función valores_unicos
-def valores_unicos(rows, col):
-    """Find the unique values for a column in a dataset."""
-    return set([row[col] for row in rows])
+
+"""
+This function finds the unique values  for a specific column of a given data set and
+returns them as a set.
+
+Inputs:
+    dataset: is the preprocessed training data set (list of listed rows).
+    column: is the desired column (int).
+Output:
+    Set of the unique column values (i.e. ignores repeated values).
+"""
 
 
-# Definición de la función conteo_clase
-def conteo_clase(rows):
-    """Counts the number of each type of example in a dataset."""
+def unique_colvalues(dataset, column):
+    return set([row[column] for row in dataset])
+
+
+"""
+This function counts the unique values for a specific column of a given data set and
+returns a dictionary of the results. The default column value is set to -1 as usually the
+column of interest for this function is the last, but it could be used with any column.
+
+Inputs:
+    dataset: is the preprocessed training data set (list of listed rows).
+    column: is the desired column (int). Default value is -1.
+Output:
+    counts: Dictionary of label -> count.
+"""
+
+
+def count_colvalues(dataset, column = -1):
     counts = {}  # a dictionary of label -> count.
-    for row in rows:
-        # in our dataset format, the label is the last column
-        label = row[-1]  # Hence -1
+    for row in dataset:
+        # in our data set format, the label of interest is the last column
+        label = row[column]  # Hence -1
         if label not in counts:
             counts[label] = 0
         counts[label] += 1
     return counts
 
 
-# Definición de la función es_num
-def es_num(value):
-    """Test if a value is numeric."""
+"""
+This function tests if a value is numeric or not and returns the boolean for each case.
+
+Input:
+    value: any input data type.
+Output:
+    True in case the input is an integer or float, False otherwise.
+"""
+
+
+def is_numeric(value):
     return isinstance(value, int) or isinstance(value, float)
 
 
-# Definición de las preguntas a través de la clase Pregunta
-class Pregunta:
-    """A Question is used to partition a dataset.
+class Question:
+    """
+    This class is created because the idea is to use a Question to partition the dataset.
 
-    This class just records a 'column number' (e.g., 0 for Color) and a
-    'column value' (e.g., Green). The 'match' method is used to compare
-    the feature value in an example to the feature value stored in the
-    question. See the demo below.
+    The class takes a given column number and a value and stores them. Then it uses the 
+    "match" function to compare the given value with the value stored in the question,
+    returning the resulting boolean value. Notice the "match" function considers both
+    numerical and categorical questions.
+    """
+
+    """
+    Constructor for a Question, which is constructed with a column number and a value
+    (numerical or categorical), i.e., Question(column,value).
     """
 
     def __init__(self, column, value):
         self.column = column
         self.value = value
 
+    """
+    Compares an example value with the value stored in the question. It makes a call to
+    the is_numeric() function and it returns the boolean value of the stated comparison
+    for each case.
+
+    Inputs:
+        self: the instance of the class, in other words, a stored question.
+        example: a value to confront the question.
+    Output:
+        Boolean value of the comparison (numerical or categorical).
+    """
+
     def match(self, example):
-        # Compare the feature value in an example to the
-        # feature value in this question.
         val = example[self.column]
-        if es_num(val):
+        if is_numeric(val):
             return val >= self.value
         else:
             return val == self.value
 
+    """
+    Method or function to represent the question in the format "is ... ?"
+    """
+
     def __repr__(self):
-        # This is just a helper method to print
-        # the question in a readable format.
         condition = "=="
         col_names = p.foo()
-        if es_num(self.value):
+        if is_numeric(self.value):
             condition = ">="
-        return "¿Es %s %s %s?" % (
+        return "is %s %s %s?" % (
             col_names[self.column], condition, str(self.value))
 
 
-# Definición de la función de partición partic
-def partic(rows, question):
-    """Partitions a dataset.
+"""
+The function makes a partition of the given data set based on a given question. For each
+row in the dataset it checks if it matches the question, if it does the matched row is
+added to the "true dataset" list, if it doesn't is added to the "false dataset" list.
 
-    For each row in the dataset, check if it matches the question. If
-    so, add it to 'true rows', otherwise, add it to 'false rows'.
-    """
-    true_rows, false_rows = [], []
-    for row in rows:
+Inputs:
+    dataset: is the preprocessed training data set (list of listed rows).
+    question: an instance of the class Question, i.e., a question.
+Outputs:
+    true_dataset: list of rows that matched the question asked.
+    flase_dataset: list of rows that didn't match the question asked.
+"""
+
+
+def partic(dataset, question):
+    true_dataset, false_dataset = [], []
+    for row in dataset:
         if question.match(row):
-            true_rows.append(row)
+            true_dataset.append(row)
         else:
-            false_rows.append(row)
-    return true_rows, false_rows
+            false_dataset.append(row)
+    return true_dataset, false_dataset
 
 
-def gini(rows):
-    """Calculate the Gini Impurity for a list of rows.
+"""
+This function calculates the Gini Impurity for a given dataset.
 
-    There are a few different ways to do this, I thought this one was
-    the most concise. See:
-    https://en.wikipedia.org/wiki/Decision_tree_learning#Gini_impurity
-    """
-    counts = conteo_clase(rows)
+Input:
+    dataset: is the preprocessed training data set (list of listed rows).
+Output:
+    impurity: numeric value of the Gini Impurity of the dataset; a numeric value between
+    0 and 0.5 which indicates the likelihood of new random data being misclassified if it
+    were given a random class label according to the class distribution in the dataset.
+"""
+
+
+def gini(dataset):
+    counts = count_colvalues(dataset)
     impurity = 1
     for lbl in counts:
-        pi = counts[lbl] / float(len(rows))
+        pi = counts[lbl] / float(len(dataset))
         impurity -= pi**2
     return impurity
 
 
-def ganancia_info(left, right, current_uncertainty):
+"""
+This function calculates the information gain, which is definied as the uncertainty of
+the starting or parent node minus the weighted impurity (gini impurity) of the two child
+nodes. Its use is usually to calculate how much information we gain when partitioning the
+data by a given question.
+
+Inputs:
+    left: left child node.
+    right: right child node.
+    current_uncertainty: uncertainty of the parent node.
+Output:
+    Information gain, a numeric value within the range 0-1 where 0 means the node is the
+    purest possible and 1 means the opposite.
+"""
+
+
+def info_gain(left, right, current_uncertainty):
     """Information Gain.
 
     The uncertainty of the starting node, minus the weighted impurity of
@@ -100,56 +177,72 @@ def ganancia_info(left, right, current_uncertainty):
     return current_uncertainty - p * gini(left) - (1 - p) * gini(right)
 
 
-def find_best_split(rows):
-    """Find the best question to ask by iterating over every feature / value
-    and calculating the information gain."""
+"""
+This function finds the best question to ask that splits the data with the most
+information gain. It does this by iterating over every column (feature) over every row
+(value) of the dataset. Over each column it uses the unique column values and for each of
+them it asks a question to split the data set keeping track of the information gain.
+
+Input:
+    dataset: is the preprocessed training data set (list of listed rows).
+Outputs:
+    best_gain: best information gain obtained by spliting the data using the best
+    question (float).
+    best_question: question that better splits the data, i.e., that results in the
+    best information gain (Question instance).
+"""
+
+
+def find_best_split(dataset):
     best_gain = 0  # keep track of the best information gain
     best_question = None  # keep train of the feature / value that produced it
-    current_uncertainty = gini(rows)
-    n_features = len(rows[0]) - 1  # number of columnsx
+    current_uncertainty = gini(dataset)
+    n_features = len(dataset[0]) - 1  # number of columns
 
-    for col in range(n_features):  # for each feature
-        values = valores_unicos(rows, col)  # unique values in the column
+    for column in range(n_features):  # for each feature
+        values = unique_colvalues(dataset, column)  # unique values in the column
 
         for val in values:  # for each value
 
-            question = Pregunta(col, val)
+            question = Question(column, val)
 
             # try splitting the dataset
-            true_rows, false_rows = partic(rows, question)
+            true_dataset, false_dataset = partic(dataset, question)
 
             # Skip this split if it doesn't divide the
             # dataset.
-            if len(true_rows) == 0 or len(false_rows) == 0:
+            if len(true_dataset) == 0 or len(false_dataset) == 0:
                 continue
 
             # Calculate the information gain from this split
-            gain = ganancia_info(true_rows, false_rows, current_uncertainty)
+            gain = info_gain(true_dataset, false_dataset, current_uncertainty)
 
-            # You actually can use '>' instead of '>=' here
-            # but I wanted the tree to look a certain way for our
-            # toy dataset.
             if gain >= best_gain:
                 best_gain, best_question = gain, question
     return best_gain, best_question
 
 
 class Leaf:
-    """A Leaf node classifies data.
+    """
+    A leaf node classifies data. It creates a dictionary of the form:
+        class -> number of times it appears in the dataset form
+                 the training data that reach this leaf.
 
-    This holds a dictionary of class (e.g., "Apple") -> number of times
-    it appears in the rows from the training data that reach this leaf.
     """
 
-    def __init__(self, rows):
-        self.predictions = conteo_clase(rows)
+    # Constructor with dataset parameter.
+
+    def __init__(self, dataset):
+        self.predictions = count_colvalues(dataset)
 
 
 class Decision_Node:
-    """A Decision Node asks a question.
-
-    This holds a reference to the question, and to the two child nodes.
     """
+    A Decision Node asks a question. It creates a reference to the question and to the
+    two child nodes
+    """
+
+    # Constructor with parameters: question, true_branch, false_branch.
 
     def __init__(self, question, true_branch, false_branch):
         self.question = question
@@ -157,38 +250,66 @@ class Decision_Node:
         self.false_branch = false_branch
 
 
-def build_tree(rows, max_depth=None, level=0):  # CART
-    """Builds the tree.
+"""
+This function constructs the decision tree of a given dataset based on the CART algorithm.
+It has control over the maximum depth allowed for the tree; by default it has no value so
+it grows the whole tree, but it can be changed to any positive integer to determine the
+depth to stop building. To keep track of the depth it uses a level parameter with initial
+value 0 that isn't supposed to be changed by the user, but it's necessary when making the
+recursion calls. Since the algorithm is recursive, we'll get a Question node or an instance
+of a Decision_Node after each recursive call until the base case is reached, and when this
+happens, we'll get a Leaf.
 
-    Rules of recursion: 1) Believe that it works. 2) Start by checking
-    for the base case (no further information gain). 3) Prepare for
-    giant stack traces.
+Inputs:
+    dataset: is the preprocessed training data set (list of listed rows).
+    max_depth: maximum depth allowed to build the tree.
+    level: it's a control parameter to keep track of the depth for each recursive call.
+
+Outputs:
+    Decision_Node(question, true_branch, false_branch): Return a Question node. This
+    records the best feature / value to ask at this point, as well as the branches to
+    follow depending on the answer.
+    Leaf(dataset): Base case, i.e., no further info gain. Since we can ask no further
+    questions, we'll return a leaf.
+"""
+
+
+def build_tree(dataset, max_depth=None, level=0):
     """
-    # Try partitioing the dataset on each of the unique attribute,
-    # calculate the information gain,
-    # and return the question that produces the highest gain.
-    gain, question = find_best_split(rows)
-    # Base case: no further info gain
-    # Since we can ask no further questions,
-    # we'll return a leaf.
+    Try partitioing the dataset on each of the unique attribute, calculate the
+    information gain, and return the question that produces the highest gain.
+    """
+    gain, question = find_best_split(dataset)
+
+    """
+    Base case: no further info gain or maximum depth has been reached. Since we
+    can ask no further questions, we'll return a leaf.
+    """
     if gain == 0 or level == max_depth:
-        return Leaf(rows)
+        return Leaf(dataset)
 
-        # If we reach here, we have found a useful feature / value
-        # to partition on.
-    true_rows, false_rows = partic(rows, question)
+    """
+    If we reach here, we have found a useful feature / value to partition on.
+    """
+    true_dataset, false_dataset = partic(dataset, question)
 
-    # Recursively build the true branch.
-    true_branch = build_tree(true_rows, max_depth, level=level + 1)
+    # Recursively build the true branch. Add 1 to the recursion level on each call.
+    true_branch = build_tree(true_dataset, max_depth, level=level + 1)
 
-    # Recursively build the false branch.
-    false_branch = build_tree(false_rows, max_depth, level=level + 1)
+    # Recursively build the false branch. Add 1 to the recursion level on each call.
+    false_branch = build_tree(false_dataset, max_depth, level=level + 1)
 
-    # Return a Question node.
-    # This records the best feature / value to ask at this point,
-    # as well as the branches to follow
-    # dependingo on the answer.
     return Decision_Node(question, true_branch, false_branch)
+
+
+"""
+This function is used to print the tree previously built. It's implemented recursively
+and prints the tree by printing it node by node.
+
+Input:
+    node: Decision_Node instance, a.k.a "the built Tree".
+    spacing: spacing for printing. "" as default.
+"""
 
 
 def print_tree(node, spacing=""):
@@ -210,23 +331,48 @@ def print_tree(node, spacing=""):
     print(spacing + '--> False:')
     print_tree(node.false_branch, spacing + "  ")
 
-# -------------------------------------Algorithm 2----------------------------------------
+
+"""
+This function takes a row of the data set and the instance of Decision_Node resulted when
+building the tree. It decides whether to follow the true-branch or the false-branch, compares
+the feature and value stored in the node (Tree) to the example (row) we're considereing. The
+base case is reached when we've reached a leaf, in that case we return the attribute predictions
+of the Leaf instance. This function is usually used within a for cycle that goes through the
+testing dataset.
+
+Inputs:
+    row: row of the preprocessed testing data set (list of listed rows).
+    node: Decision_Node instance, a.k.a "the built Tree".
+Output:
+    node.predictions: prediction of the input node, which is the dictionary obtained by
+    the count_colvalues function applied to the leaf when reaching the base case, i.e, a
+    dictionary of the predicted number of 1's and 0's (counts dictionary).
+"""
 
 
 def classify(row, node):
-    """See the 'rules of recursion' above."""
 
     # Base case: we've reached a leaf
     if isinstance(node, Leaf):
         return node.predictions
 
-    # Decide whether to follow the true-branch or the false-branch.
-    # Compare the feature / value stored in the node,
-    # to the example we're considering.
+    # It decides whether to follow the true-branch or the false-branch and compares
     if node.question.match(row):
         return classify(row, node.true_branch)
     else:
         return classify(row, node.false_branch)
+
+
+"""
+This function takes the output of the classify function (counts dictionary) and constructs
+a dictionary with the proportion (probability) instead of counts.
+
+Input:
+    counts: counts dictionary obtained by the classify function.
+
+Output:
+    probs: probability dictionary obtained by showing proportion instead.
+"""
 
 
 def print_leaf(counts):

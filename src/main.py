@@ -12,7 +12,7 @@ test, _ = p.preprocess_data(
 ltrain = p.convert_to_list(train.iloc[0:150, :])
 ltest = p.convert_to_list(test.iloc[0:50, :])
 
-print(d.conteo_clase(ltrain))
+print(d.count_colvalues(ltrain))
 T = d.build_tree(ltrain, max_depth=2)
 print("-----------------------------Tree-----------------------------")
 d.print_tree(T)
@@ -21,7 +21,7 @@ print("--------------------------------------------------------------")
 # Print actual values vs predictions
 for row in ltest:
     print("Actual: %s. Predicted: %s" %
-          (row[-1], d.print_leaf(d.classify(row, T))))
+          (row[-1], d.classify(row, T)))
 
 
 # Print to text file "test.txt"
