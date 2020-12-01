@@ -2,9 +2,9 @@
 
 **Context:**
 The given context is to make predictions on the academic success (*éxito académico*) in
-higher education (*educación superior*) using decision trees. The academic success in this
-scope is definied as the probability that a student has to obtain total score, superior to
-his cohort's average, in the *Pruebas Saber Pro* test.
+higher education (*educación superior*) using decision trees. The academic success in
+this scope is defined as the probability that a student gets a total score superior to his
+cohort's average, in the *Pruebas Saber Pro* test.
 
 **Problem:**
 Design an algorithm based on decision trees and the *Saber 11* data to predict whether a
