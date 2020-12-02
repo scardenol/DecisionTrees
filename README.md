@@ -19,74 +19,89 @@ different ```.csv``` files.
 The program takes a ```.csv``` file of training data, builds a decision tree based
 on the CART algorithm and classifies a ```.csv``` file of testing data, making predictions
 for the column with label *exito* (success).
-language of a Pushdown Automaton. In order to do so, it utilizes various functions
-in a certain processing order that can be easily understood via the following image.
+
+**Code execution:**
+To run the code simply execute the ```main.py``` file, which is the run script for the code.
+A flow of the execution process as well as the main functions called is shown in the image below.
 
 ![Imgur](https://i.imgur.com/l5hJKf6.png)
 
-The functions stated as "Functions" are simply the "main" functions whereas the functions
-stated as "Auxiliary functions" serve a particular purpose required by a main function
-that calls it. Generally speaking, each function's role is as follows:
+The functions in orange represent the functions loaded from the ```Preprocessing.py``` module,
+while the ones in green are loded from the ```Decision_Tree.py```. An example is already programmed
+in the main script, and as the execution flow shows the output is seen in terminal. Generally
+speaking, each function's role is as follows:
 
-```simPDA``` is the one function that tests the belonging of the word by returning
-a boolean, True for belonging or False for not belonging. But in order to do so,
-it proccesses the word ```processWord``` and also initializes the stack ```iniStack```
-with the z0 symbol of the automaton being evaluated.
+```preprocess_data``` This function is based on the pandas library to read a csv file. It utilizes
+the read_csv, convert_dtypes and columns functions of pandas. It handles the preprocessing proces of
+the data by properly handling the filename, separator, na values and data types of the array
+obtained using pandas.
 
-```processWord``` performs the transition from a current state to the next one, updates 
-the stack and returns True or False if the word belongs to the automaton. If the current state
-is Nothing it means the automaton has reached a dead state and the word does not belong.
-It implements ```isAccepting```, ```getNextState``` and ```processInput``` for this task.
+```convert_to_list``` A basic function that converts the array obtained by using pandas into a list.
+It utilizes the numpy function ```array()``` to handle it as a numpy array an then it uses the function
+```tolist()``` to finish the process.
 
-```processInput``` removes the last symbol of the stack and then pushes
-each symbol that is in the list obtained from the automaton (in reverse order). It uses
-```getStackReplace``` and ```pushList``` for this task.
+```build_tree``` This function constructs the decision tree of a given dataset based on the CART algorithm.
+It has control over the maximum depth allowed for the tree; by default it has no value so
+it grows the whole tree, but it can be changed to any positive integer to determine the
+depth to stop building. To keep track of the depth it uses a level parameter with initial
+value 0 that isn't supposed to be changed by the user, but it's necessary when making the
+recursion calls. Since the algorithm is recursive, we'll get a Question node or an instance
+of a Decision_Node after each recursive call until the base case is reached, and when this
+happens, we'll get a Leaf.
 
-```getNextState``` obtains the next state from the transition function of the automaton
-given the current state, the input symbol and the stack. It implements ```nextStateAux```
-in order to do so.
+```print_tree``` This function is used to print the tree previously built. It's implemented recursively
+and prints the tree by printing it node by node.
 
-```nextStateAux``` obtains the next state from the transition function of the automaton.
-given the current state, the input symbol and the last symbol of the stack.
+```classify``` This function takes a row of the data set and the instance of Decision_Node resulted when
+building the tree. It decides whether to follow the true-branch or the false-branch, compares
+the feature and value stored in the node (Tree) to the example (row) we're considereing. The
+base case is reached when we've reached a leaf, in that case we return the attribute predictions
+of the Leaf instance. This function is usually used within a for cycle that goes through the
+testing dataset.
 
-```getStackReplace``` obtains the list of symbols that will replace the 
-last symbol of the stack.
-
-```getTransitionPair``` Obtains the ordered pair of state and list of stack symbols.
-
-```pushList``` pushes each symbol of a given list into a given stack.
-
-```lookupKey``` returns the first element of a given set or returns Nothing if no set is given.
-
-```isAccepting``` returns boolean values, i.e, True or False whether or not the state evaluated is the
-accepting state.
-
-```iniStack``` returns a stack with the initial z0 symbol of the given automaton.
+```print_leaf``` This function takes the output of the classify function (counts dictionary) and constructs
+a dictionary with the proportion (probability) instead of counts.
 
 **How to use program:**
-To use, input the following:
+To use, look at the example below and input the following:
 
-**1.** The ```simPDA``` function
-
-**2.** followed by a function that has as input parameters the PDA set, i.e.,
-the set that represents a Pushdown Automata:
+**1.** Call the ```preprocess_data``` function for the training and testing data with adequate input parameters
+as follows:
 ```
-data PushDownAutomata state symbol symbolp = PDA
-  {states, alphabet, stackalphabet, delta, initialState, z0, acceptState}
+train, col_names = p.preprocess_data(
+    "0_train_balanced_15000.csv", sep=";", keep_default_na=False)
+
+test, _ = p.preprocess_data(
+    "0_test_balanced_5000.csv", sep=";", keep_default_na=False)
 ```
-which can be either one of the 3 given functions that represent automatas
-```pda0```, ```pda1``` or ```pda2```, or by manual input of such set.
 
-**3.** and lastly, followed by a string of symbols or a word either written
-as a explicit set or by using Syntatic sugar.
+**2.** followed by the ```convert_to_list``` function for each dataset
+```
+ltrain = p.convert_to_list(train.iloc[0:150, :])
+ltest = p.convert_to_list(test.iloc[0:50, :])
+```
 
-**e.g.** to test if the word [0,1,1,0] belongs to the language of the automaton
-described by ```pda0``` the input would be
+**3.** build the tree with ```build_tree``` and print it with ```print_tree```
+```
+T = d.build_tree(ltrain, max_depth=2)
+d.print_tree(T)
+```
 
-```simPDA pda0 [0,1,1,0]```
+**4.** use the functions ```classify``` and ```print_leaf``` with the following code:
+```
+correct_predictions = 0
+for row in ltest:
+    print("Actual: %s. Predicted: %s" %
+          (row[-1], d.print_leaf(d.classify(row, T))))
+    leaf = d.classify(row, T)
+    if leaf[row[-1]] > leaf[abs(row[-1] - 1)]:
+        correct_predictions += 1
 
+success_of_tree = correct_predictions / len(ltest) * 100
+print("Success of Tree's predictions: %s %%" % (success_of_tree))
+```
 **Operating system version:** Microsoft Windows 10 Home Single Language
 
-**GHC version:** 8.8.3
+**Python version:** 3.9.0
 
 HLint v2.2.11, (C) Neil Mitchell 2006-2020
