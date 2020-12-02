@@ -382,3 +382,29 @@ def print_leaf(counts):
     for lbl in counts.keys():
         probs[lbl] = str(int(counts[lbl] / total * 100)) + "%"
     return probs
+
+
+"""
+This function is the printing function of the results, it takes the testing dataset
+and the created tree and iterates over every row of the testing data set printing
+in format the actual value and the predicted value; this is done by calling the
+classify and print_leaf functions. Lastly, the success of the predictions made by
+the tree is measured and printed
+
+Input:
+    testing_dataset: is the preprocessed testing dataset (list of listed rows).
+    tree: is the tree created with the training dataset.
+"""
+
+
+def predict(testing_dataset, tree):
+
+    correct_predictions = 0
+    for row in testing_dataset:
+        print("Actual: %s. Predicted: %s" %
+              (row[-1], print_leaf(classify(row, tree))))
+        leaf = classify(row, tree)
+        if leaf[row[-1]] > leaf[abs(row[-1] - 1)]:
+            correct_predictions += 1
+    success_of_tree = correct_predictions / len(testing_dataset) * 100
+    print("Success of Tree's predictions: %s %%" % (success_of_tree))
