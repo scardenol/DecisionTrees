@@ -23,9 +23,7 @@ language of a Pushdown Automaton. In order to do so, it utilizes various functio
 in a certain processing order that can be easily understood via the following image.
 
   
-<details>
-  <summary>Click to expand!</summary>
-![Image of the general program proccessing](https://i.imgur.com/dTE1z7F.png)
+![General Execution of Code](https://imgur.com/l5hJKf6)
 
 The functions stated as "Functions" are simply the "main" functions whereas the functions
 stated as "Auxiliary functions" serve a particular purpose required by a main function
@@ -93,4 +91,3 @@ described by ```pda0``` the input would be
 **GHC version:** 8.8.3
 
 HLint v2.2.11, (C) Neil Mitchell 2006-2020
-</details>
