@@ -32,7 +32,7 @@ in the main script, and as the execution flow shows the output is seen in termin
 speaking, each function's role is as follows:
 
 ```preprocess_data``` This function is based on the pandas library to read a csv file. It utilizes
-the read_csv, convert_dtypes and columns functions of pandas. It handles the preprocessing proces of
+the read_csv, convert_dtypes and columns functions of pandas. It handles the preprocessing process of
 the data by properly handling the filename, separator, na values and data types of the array
 obtained using pandas.
 
@@ -54,7 +54,7 @@ and prints the tree by printing it node by node.
 
 ```classify``` This function takes a row of the data set and the instance of Decision_Node resulted when
 building the tree. It decides whether to follow the true-branch or the false-branch, compares
-the feature and value stored in the node (Tree) to the example (row) we're considereing. The
+the feature and value stored in the node (Tree) to the example (row) we're considering. The
 base case is reached when we've reached a leaf, in that case we return the attribute predictions
 of the Leaf instance. This function is usually used within a for cycle that goes through the
 testing dataset.
@@ -103,5 +103,3 @@ print("Success of Tree's predictions: %s %%" % (success_of_tree))
 **Operating system version:** Microsoft Windows 10 Home Single Language
 
 **Python version:** 3.9.0
-
-HLint v2.2.11, (C) Neil Mitchell 2006-2020
