@@ -23,7 +23,7 @@ language of a Pushdown Automaton. In order to do so, it utilizes various functio
 in a certain processing order that can be easily understood via the following image.
 
   
-![Imgur](https://imgur.com/l5hJKf6)
+![Imgur](https://imgur.com/a/5iLcF5m)
 
 The functions stated as "Functions" are simply the "main" functions whereas the functions
 stated as "Auxiliary functions" serve a particular purpose required by a main function
