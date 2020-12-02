@@ -22,7 +22,7 @@ for the column with label *exito* (success).
 language of a Pushdown Automaton. In order to do so, it utilizes various functions
 in a certain processing order that can be easily understood via the following image.
 
-  
+<img src="https://imgur.com/a/5iLcF5m"/>
 ![Imgur](https://imgur.com/a/5iLcF5m)
 
 The functions stated as "Functions" are simply the "main" functions whereas the functions
