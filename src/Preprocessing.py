@@ -3,7 +3,7 @@ import numpy as np  # Imports the library "numpy" as "np"
 
 """
 This function is based on the pandas library to read a csv file. It utilizes the read_csv,
-convert_dtypes and columns functions of pandas. It handles the preprocessing proces of the
+convert_dtypes and columns functions of pandas. It handles the preprocessing process of the
 data by properly handling the filename, separator, na values and data types of the array
 obtained using pandas.
 
@@ -36,8 +36,8 @@ def preprocess_data(filename, sep=",", keep_default_na=True):
 
 """
 A basic function that converts the array obtained by using pandas into a list. It utilizes
-the numpy function to handle it as a numpy array an then it uses the function tolist() to
-finish the process.
+the numpy function array() to handle it as a numpy array an then it uses the function tolist()
+to finish the process.
 
 Input:
     data: pandas array properly preprocessed.

@@ -186,7 +186,7 @@ them it asks a question to split the data set keeping track of the information g
 Input:
     dataset: is the preprocessed training data set (list of listed rows).
 Outputs:
-    best_gain: best information gain obtained by spliting the data using the best
+    best_gain: best information gain obtained by splitting the data using the best
     question (float).
     best_question: question that better splits the data, i.e., that results in the
     best information gain (Question instance).
@@ -276,7 +276,7 @@ Outputs:
 
 def build_tree(dataset, max_depth=None, level=0):
     """
-    Try partitioing the dataset on each of the unique attribute, calculate the
+    Try partitioning the dataset on each of the unique attribute, calculate the
     information gain, and return the question that produces the highest gain.
     """
     gain, question = find_best_split(dataset)
@@ -335,7 +335,7 @@ def print_tree(node, spacing=""):
 """
 This function takes a row of the data set and the instance of Decision_Node resulted when
 building the tree. It decides whether to follow the true-branch or the false-branch, compares
-the feature and value stored in the node (Tree) to the example (row) we're considereing. The
+the feature and value stored in the node (Tree) to the example (row) we're considering. The
 base case is reached when we've reached a leaf, in that case we return the attribute predictions
 of the Leaf instance. This function is usually used within a for cycle that goes through the
 testing dataset.

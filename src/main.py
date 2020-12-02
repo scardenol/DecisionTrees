@@ -19,14 +19,13 @@ d.print_tree(T)
 print("--------------------------------------------------------------")
 
 # Print actual values vs predictions
+correct_predictions = 0
 for row in ltest:
     print("Actual: %s. Predicted: %s" %
-          (row[-1], d.classify(row, T)))
+          (row[-1], d.print_leaf(d.classify(row, T))))
+    leaf = d.classify(row, T)
+    if leaf[row[-1]] > leaf[abs(row[-1] - 1)]:
+        correct_predictions += 1
 
-
-# Print to text file "test.txt"
-#sys.stdout = open("test.txt", "w")
-
-#---------------- code
-
-# #sys.stdout.close()
+success_of_tree = correct_predictions / len(ltest) * 100
+print("Success of Tree's predictions: %s %%" % (success_of_tree))
