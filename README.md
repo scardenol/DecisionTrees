@@ -24,7 +24,7 @@ for the column with label *exito* (success).
 To run the code simply execute the ```main.py``` file, which is the run script for the code.
 A flow of the execution process as well as the main functions called is shown in the image below.
 
-![Imgur](https://i.imgur.com/l5hJKf6.png)
+![Imgur](https://i.imgur.com/ALyC2bO.png)
 
 The functions in orange represent the functions loaded from the ```Preprocessing.py``` module,
 while the ones in green are loded from the ```Decision_Tree.py```. An example is already programmed
@@ -64,6 +64,11 @@ a dictionary with the proportion (probability) instead of counts.
 
 **How to use program:**
 To use, look at the example below and input the following:
+**imports.** First make the proper imports:
+```
+import Preprocessing as p
+import Decision_Tree as d
+```
 
 **1.** Call the ```preprocess_data``` function for the training and testing data with adequate input parameters
 as follows:
@@ -87,18 +92,9 @@ T = d.build_tree(ltrain, max_depth=2)
 d.print_tree(T)
 ```
 
-**4.** use the functions ```classify``` and ```print_leaf``` with the following code:
+**4.** use the function ```predict``` with the following code:
 ```
-correct_predictions = 0
-for row in ltest:
-    print("Actual: %s. Predicted: %s" %
-          (row[-1], d.print_leaf(d.classify(row, T))))
-    leaf = d.classify(row, T)
-    if leaf[row[-1]] > leaf[abs(row[-1] - 1)]:
-        correct_predictions += 1
-
-success_of_tree = correct_predictions / len(ltest) * 100
-print("Success of Tree's predictions: %s %%" % (success_of_tree))
+d.predict(ltest, T)
 ```
 **Operating system version:** Microsoft Windows 10 Home Single Language
 
