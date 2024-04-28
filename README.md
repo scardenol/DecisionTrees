@@ -1,26 +1,30 @@
-**Names:** Danilo de Jesús Toro Echeverri, Salomón Cardeño Luján
+# Authors
+Danilo de Jesús Toro Echeverri
+Salomón Cardeño Luján
 
-**Context:**
+# Context
 The given context is to make predictions on the academic success (*éxito académico*) in
 higher education (*educación superior*) using decision trees. The academic success in
 this scope is defined as the probability that a student gets a total score superior to his
 cohort's average, in the *Pruebas Saber Pro* test.
 
-**Problem:**
-Design an algorithm based on decision trees and the *Saber 11* data to predict whether a
+# Problem:
+Design a decision trees algorithm from scratch in pure Python and use the *Saber 11* data to predict whether a
 student will have a total score, in the *Pruebas Saber Pro*, above average or not.
 
-**About the data:**
-The datasets in https://github.com/mauriciotoro/ST0245-Eafit/tree/master/proyecto/datasets
-were the ones assigned to the project, where the training and test data are available as
-different ```.csv``` files.
+# About the data
+The datasets are available as two sepparate ```.csv``` files:
+- ```0_train_balanced_15000.csv``` is the train data.
+- ```0_test_balanced_5000.csv``` is the test data.
 
-**General description:** 
+Both datasets are already preprocessed and balanced.
+
+# General description
 The program takes a ```.csv``` file of training data, builds a decision tree based
 on the CART algorithm and classifies a ```.csv``` file of testing data, making predictions
 for the column with label *exito* (success).
 
-**Code execution:**
+# Code execution
 To run the code simply execute the ```main.py``` file, which is the run script for the code.
 A flow of the execution process as well as the main functions called is shown in the image below.
 
@@ -62,9 +66,10 @@ testing dataset.
 ```print_leaf``` This function takes the output of the classify function (counts dictionary) and constructs
 a dictionary with the proportion (probability) instead of counts.
 
-**How to use program:**
-To use, look at the example below and input the following:
-**imports.** First make the proper imports:
+# User guide
+Follow the example below to run the code on your own custom input parameters.
+
+**0.** Open a python terminal on the project directory and make the following imports:
 ```
 import Preprocessing as p
 import Decision_Tree as d
@@ -98,4 +103,4 @@ d.predict(ltest, T)
 ```
 **Operating system version:** Microsoft Windows 10 Home Single Language
 
-**Python version:** 3.9.0
+**Python version:** >= 3.9.0
